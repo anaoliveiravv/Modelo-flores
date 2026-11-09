@@ -28,10 +28,10 @@ print("Modelo treinado!")
 print("Espécies:", ", ".join(modelo.classes_))
 
 nova_flor = pd.DataFrame([{
-    "diametro_flor_cm": 8.4,
-    "comprimento_petala_cm": 4.1,
-    "numero_petalas": 28,
-    "cor": "vermelha"
+    "diametro_flor_cm": 19.0,
+    "comprimento_petala_cm": 7.2,
+    "numero_petalas": 34,
+    "cor": "amarela"
 }])
 
 resultado = modelo.predict(nova_flor)
