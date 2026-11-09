@@ -1,25 +1,39 @@
 
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
+import pandas as pd
+
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
 
-iris = load_iris()
+flores = pd.read_csv("flores.csv")
 
-X = iris.data
-y = iris.target
+X = flores.drop(columns=["especie"])
+y = flores["especie"]
 
-X_treino, X_teste, y_treino, y_teste = train_test_split(
-    X, y, test_size=0.2, random_state=42
+preprocessamento = ColumnTransformer(
+    transformers=[
+        ("cores", OneHotEncoder(handle_unknown="ignore"), ["cor"])
+    ],
+    remainder="passthrough"
 )
 
-modelo = DecisionTreeClassifier(max_depth=3, random_state=42)
-modelo.fit(X_treino, y_treino)
-previsoes = modelo.predict(X_teste)
-acuracia = accuracy_score(y_teste, previsoes)
-print(f"Acurácia: {acuracia:.2%}")
+modelo = Pipeline([
+    ("preprocessamento", preprocessamento),
+    ("classificador", DecisionTreeClassifier(random_state=42))
+])
 
-#NOVA FLOR
-nova_flor = [[6.0, 2.9, 4.5, 1.5]]
+modelo.fit(X, y)
+
+print("Modelo treinado!")
+print("Espécies:", ", ".join(modelo.classes_))
+
+nova_flor = pd.DataFrame([{
+    "diametro_flor_cm": 8.4,
+    "comprimento_petala_cm": 4.1,
+    "numero_petalas": 28,
+    "cor": "vermelha"
+}])
+
 resultado = modelo.predict(nova_flor)
-print("Espécie prevista:", iris.target_names[resultado[0]])
+print("Espécie prevista:", resultado[0])
